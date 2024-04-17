@@ -1,126 +1,136 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:untitled11/business%20logic/cubits/Show%20Time%20Table/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/edit_profile_backup_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/event_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/exam_schedule_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/exam_table_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/feedback_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/home_cubit_owner/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/home_cubit_staff/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/login_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/sort_student_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/staff_profile/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/student_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/student_profile/student_profile_cubit.dart';
+import 'package:untitled11/business%20logic/cubits/teacher_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/timetable_cubit/cubit.dart';
+import 'package:untitled11/business%20logic/cubits/web_cubit/cubit_admin.dart';
+import 'package:untitled11/business%20logic/cubits/web_cubit/cubit_staff.dart';
+import 'package:untitled11/network/cache_helper.dart';
+import 'package:untitled11/presentation/components%20and%20constants/bloc_observer.dart';
+import 'package:untitled11/presentation/components%20and%20constants/constants.dart';
+import 'package:untitled11/presentation/screens/layouts/layout1.dart';
+import 'package:untitled11/presentation/screens/layouts/staff_layout.dart';
+import 'package:untitled11/presentation/screens/login_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Bloc.observer = MyBlocObserver();
+  await CacheHelper.init();
+  Widget? widget;
+  token = CacheHelper.getData(key: 'token');
+  type = CacheHelper.getData(key: 'type');
+  print(token);
+  print(type);
+  //CacheHelper.removeData(key: 'token');
+  // CacheHelper.removeData(key: 'type');
+
+  if (token != null) {
+    if (type == 'owner') {
+      widget = DashBoard();
+    } else if (type == 'admin') {
+      widget = DashBoardStaff();
+    }
+  } else {
+    widget = LogIn();
+  }
+
+  runApp(MyApp(
+    startWidget: widget,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget? startWidget;
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  MyApp({this.startWidget});
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AppLoginCubit(),
         ),
+        BlocProvider(
+          create: (context) => WebHomeCubit()..getHomeWebData(year: DateTime.now().year + 1, token: token.toString()),
+        ),
+        BlocProvider(create: (context) => WebHomeStaffCubit()..getHomeWebData(year: DateTime.now().year + 1, token: token.toString())),
+        BlocProvider(
+          create: (context) => EventWebCubit()..showEvents(),
+        ),
+        BlocProvider(
+          create: (context) =>
+              ShowTimetableCubit(),
+        ),
+        BlocProvider(
+          create: (context) => StudentCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AppTeacherWebCubit()..showTeachers(activeValue:'true' ),
+        ),
+        BlocProvider(
+          create: (context) => TimetableCubit()
+            ..showSections()
+            ..showSubjectTeacher()
+            ..showEnglishSubjectTeacher()
+            ..showFrenchSubjectTeacher()
+            ..showMathSubjectTeacher()
+            ..showPhysicsSubjectTeacher()
+            ..showChemistrySubjectTeacher()
+            ..showArtSubjectTeacher()
+            ..showMusicSubjectTeacher()
+            ..showSportsSubjectTeacher()
+            ..showSocialSubjectTeacher()
+            ..showCultureSubjectTeacher()
+            ..showReligionSubjectTeacher()
+            ..showPhilosophySubjectTeacher()
+            ..showScienceSubjectTeacher()
+            ..showTechnologySubjectTeacher(),
+        ),
+        BlocProvider(create: (context) => ExamCubit(),),
+        BlocProvider(
+          create: (context) => WebStaffCubit()..showStaff(),
+        ),
+        BlocProvider(
+          create: (context) => WebSchoolCubit(),
+        ),
+        BlocProvider(
+          create: (context) => StaffProfileCubit(),
+        ),
+        BlocProvider(
+          create: (context) => StudentProfileCubit(),
+        ),
+        BlocProvider(
+          create: (context) => StudentSortCubit(),
+        ),
+        BlocProvider(
+          create: (context) => FeedbackCubit(),
+        ),
+        BlocProvider(
+          create: (context) => EditBackUpCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AddExamTableCubit(),
+        ),
+      ],
+      child: MaterialApp(
+        theme: ThemeData(primarySwatch: buildMaterialColor(AppColors.darkBlue)),
+        debugShowCheckedModeBanner: false,
+        home: startWidget,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
