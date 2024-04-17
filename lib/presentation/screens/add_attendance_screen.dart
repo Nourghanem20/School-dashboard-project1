@@ -21,6 +21,7 @@ class AttendanceScreen extends StatefulWidget {
 class _AttendanceScreenState extends State<AttendanceScreen> {
   bool isSelected = true;
   bool isSelectionMode = false;
+  String name="nour";
   Map<int, bool> selectedFlag = {};
   TextEditingController sectionController = TextEditingController();
   TextEditingController dateAttendanceController = TextEditingController();
